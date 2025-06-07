@@ -1,65 +1,52 @@
 body {
-  background-color: #222;
-  color: #fff;
-  font-family: sans-serif;
-  text-align: center;
-  padding: 20px;
+    font-family: sans-serif;
+    background-color: #222;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
 }
 
-#stats {
-  margin-bottom: 15px;
+h1 {
+    margin-top: 20px;
+}
+
+.stats {
+    margin-bottom: 20px;
 }
 
 #blockContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px;
 }
 
 .block {
-  width: 60px;
-  height: 60px;
-  background-color: #4caf50;
-  color: white;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  cursor: pointer;
-  user-select: none;
+    padding: 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    min-width: 50px;
+    text-align: center;
+    font-weight: bold;
 }
 
-#shop {
-  margin-top: 20px;
+.shop-button {
+    display: block;
+    width: 300px;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
-#shop button {
-  display: block;
-  width: 250px;
-  margin: 10px auto;
-  padding: 10px;
-  font-size: 16px;
-  background-color: #673ab7;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#shop button:hover {
-  background-color: #5e35b1;
-}
-
-#resetBtn {
-  margin-top: 20px;
-  background-color: #e53935;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
+.shop-button:hover {
+    background-color: #666;
 }
