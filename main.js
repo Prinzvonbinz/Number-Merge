@@ -40,11 +40,12 @@ function spawnBlock() {
 function renderBlocks() {
   blockContainer.innerHTML = "";
   blocks.forEach((val, idx) => {
+    const displayVal = val > 0 && !isNaN(val) ? val : 1;
     const block = document.createElement("div");
     block.className = "block";
-    block.textContent = val > 0 ? val : 1;
-    block.style.backgroundColor = getColor(val);
-    block.onclick = () => combineBlock(idx, val);
+    block.textContent = displayVal;
+    block.style.backgroundColor = getColor(displayVal);
+    block.onclick = () => combineBlock(idx, displayVal);
     blockContainer.appendChild(block);
   });
   moneyDisplay.textContent = Math.floor(money);
@@ -67,7 +68,7 @@ function combineBlock(index, value) {
 
 function generateIncome() {
   blocks.forEach(val => {
-    if (val > 0) money += val;
+    if (val > 0 && !isNaN(val)) money += val;
   });
   renderBlocks();
   saveGame();
@@ -111,10 +112,12 @@ function runWorker() {
 
 function resetGame() {
   if (confirm("Bist du sicher, dass du das Spiel zurücksetzen willst?")) {
+    clearInterval(spawnInterval);
+    clearInterval(incomeInterval);
+    clearInterval(workerInterval);
+    clearInterval(gameTimeInterval);
     localStorage.clear();
     location.reload();
-  }
-}
   }
 }
 
