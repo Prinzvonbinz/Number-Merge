@@ -7,25 +7,23 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="header">
-    <h1>Number Merge</h1>
-    <p>💰 Geld: <span id="money">0</span></p>
-    <p>🕒 Spielzeit: <span id="gameTime">0:00</span></p>
-    <p>⏳ Nächster Block in: <span id="spawnTimer">0</span>s</p>
+  <h1>Number Merge</h1>
+  <div id="stats">
+    <div>Geld: <span id="money">0</span></div>
+    <div>Spielzeit: <span id="gameTime">0s</span></div>
+    <div>Nächster Block in: <span id="spawnTimer">30</span>s</div>
   </div>
-
-  <div id="blocks"></div>
-
-  <button id="shopButton">Shop</button>
-
-  <div id="shop" class="hidden">
+  
+  <div id="blockContainer"></div>
+  
+  <div id="shop">
     <h2>Shop</h2>
-    <button class="shop-btn" id="upgradeStartValue">Startwert erhöhen (Kosten: <span id="costStartValue">10</span>)</button>
-    <button class="shop-btn" id="upgradeSpeed">Spawn-Geschwindigkeit erhöhen (Kosten: <span id="costSpeed">20</span>)</button>
-    <button class="shop-btn" id="upgradeWorker">Arbeiter verbessern (Kosten: <span id="costWorker">50</span>)</button>
-    <button class="shop-btn" onclick="closeShop()">Zurück</button>
-    <button class="shop-btn danger" onclick="resetGame()">Spiel zurücksetzen</button>
+    <button onclick="buyUpgrade('startValue')">Startwert (+1) – <span id="price_startValue">10</span>$</button>
+    <button onclick="buyUpgrade('spawnSpeed')">Geschwindigkeit (+5%) – <span id="price_spawnSpeed">25</span>$</button>
+    <button onclick="buyUpgrade('worker')">Arbeiter (schneller) – <span id="price_worker">50</span>$</button>
   </div>
+
+  <button id="resetBtn" onclick="resetGame()">Reset Spiel</button>
 
   <script src="main.js"></script>
 </body>
