@@ -111,10 +111,6 @@ function runWorker() {
 
 function resetGame() {
   if (confirm("Bist du sicher, dass du das Spiel zurücksetzen willst?")) {
-    clearInterval(spawnInterval);
-    clearInterval(incomeInterval);
-    clearInterval(workerInterval);
-    clearInterval(gameTimeInterval);
     localStorage.clear();
     location.reload();
   }
