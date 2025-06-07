@@ -1,147 +1,132 @@
-// Initialwerte
-let money = 0;
-let blocks = [];
-let startValue = 1;
-let spawnSpeed = 10000; // in ms
-let workerSpeed = 5000;
+let blocks = JSON.parse(localStorage.getItem("blocks")) || [];
+let money = Number(localStorage.getItem("money")) || 0;
+let startValue = Number(localStorage.getItem("startValue")) || 1;
+let spawnSpeed = Number(localStorage.getItem("spawnSpeed")) || 30000;
+let workerSpeed = Number(localStorage.getItem("workerSpeed")) || 10000;
+let prices = JSON.parse(localStorage.getItem("prices")) || {
+  startValue: 10,
+  spawnSpeed: 25,
+  worker: 50
+};
+let gameTime = Number(localStorage.getItem("gameTime")) || 0;
 
-let costStartValue = 10;
-let costSpeed = 20;
-let costWorker = 50;
+let spawnCountdown = spawnSpeed;
+let spawnInterval;
+let incomeInterval;
+let gameTimeInterval;
+let workerInterval;
 
-let gameTime = 0;
-let spawnCountdown = Math.floor(spawnSpeed / 1000);
+const moneyDisplay = document.getElementById("money");
+const gameTimeDisplay = document.getElementById("gameTime");
+const spawnTimerDisplay = document.getElementById("spawnTimer");
+const blockContainer = document.getElementById("blockContainer");
 
-const blockColors = ["#f39c12", "#e67e22", "#e74c3c", "#9b59b6", "#3498db", "#1abc9c", "#2ecc71", "#95a5a6"];
+function saveGame() {
+  localStorage.setItem("blocks", JSON.stringify(blocks));
+  localStorage.setItem("money", money);
+  localStorage.setItem("startValue", startValue);
+  localStorage.setItem("spawnSpeed", spawnSpeed);
+  localStorage.setItem("workerSpeed", workerSpeed);
+  localStorage.setItem("prices", JSON.stringify(prices));
+  localStorage.setItem("gameTime", gameTime);
+}
 
-const moneyEl = document.getElementById("money");
-const blocksContainer = document.getElementById("blocks");
-const spawnTimerEl = document.getElementById("spawnTimer");
-const gameTimeEl = document.getElementById("gameTime");
+function spawnBlock() {
+  const value = Math.max(1, startValue);
+  blocks.push(value);
+  renderBlocks();
+}
 
-// UI-Update
-function updateUI() {
-  moneyEl.textContent = money;
-  spawnTimerEl.textContent = Math.max(0, spawnCountdown);
-
-  const mins = Math.floor(gameTime / 60);
-  const secs = gameTime % 60;
-  gameTimeEl.textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
-
-  blocksContainer.innerHTML = "";
-  blocks.forEach((val, index) => {
-    const div = document.createElement("div");
-    div.className = "block";
-    div.textContent = val;
-    const colorIndex = Math.min(Math.log2(val) - 1, blockColors.length - 1);
-    div.style.background = blockColors[colorIndex] || "#666";
-    div.onclick = () => combineBlock(index);
-    blocksContainer.appendChild(div);
+function renderBlocks() {
+  blockContainer.innerHTML = "";
+  blocks.forEach((val, idx) => {
+    const block = document.createElement("div");
+    block.className = "block";
+    block.textContent = val > 0 ? val : 1;
+    block.style.backgroundColor = getColor(val);
+    block.onclick = () => combineBlock(idx, val);
+    blockContainer.appendChild(block);
   });
-
-  document.getElementById("costStartValue").textContent = costStartValue;
-  document.getElementById("costSpeed").textContent = costSpeed;
-  document.getElementById("costWorker").textContent = costWorker;
+  moneyDisplay.textContent = Math.floor(money);
 }
 
-// Block hinzufügen
-function addBlock() {
-  blocks.push(startValue);
-  spawnCountdown = Math.floor(spawnSpeed / 1000);
-  updateUI();
+function getColor(val) {
+  const hue = (val * 30) % 360;
+  return `hsl(${hue}, 70%, 50%)`;
 }
 
-// Block kombinieren
-function combineBlock(index) {
-  const value = blocks[index];
-  const matchIndex = blocks.findIndex((v, i) => i !== index && v === value);
-  if (matchIndex !== -1) {
+function combineBlock(index, value) {
+  const sameIndex = blocks.findIndex((v, i) => v === value && i !== index);
+  if (sameIndex !== -1) {
     blocks.splice(index, 1);
-    blocks[matchIndex] *= 2;
-    updateUI();
+    blocks.splice(sameIndex, 1);
+    blocks.push(value * 2);
+    renderBlocks();
   }
 }
 
-// Geld verdienen
-function earnMoney() {
-  money += blocks.reduce((sum, val) => sum + val, 0);
-  updateUI();
+function generateIncome() {
+  blocks.forEach(val => {
+    if (val > 0) money += val;
+  });
+  renderBlocks();
+  saveGame();
 }
 
-// Arbeiter kombiniert Blöcke automatisch
-function workerCombine() {
+function updateSpawnTimer() {
+  spawnCountdown -= 1000;
+  if (spawnCountdown <= 0) {
+    spawnBlock();
+    spawnCountdown = spawnSpeed;
+  }
+  spawnTimerDisplay.textContent = Math.ceil(spawnCountdown / 1000);
+}
+
+function buyUpgrade(type) {
+  if (money >= prices[type]) {
+    money -= prices[type];
+    if (type === "startValue") startValue += 1;
+    if (type === "spawnSpeed") spawnSpeed = Math.max(5000, spawnSpeed * 0.95);
+    if (type === "worker") workerSpeed = Math.max(1000, workerSpeed * 0.9);
+    prices[type] = Math.floor(prices[type] * 1.5);
+    document.getElementById("price_" + type).textContent = prices[type];
+    saveGame();
+  }
+}
+
+function runWorker() {
   for (let i = 0; i < blocks.length; i++) {
-    const val = blocks[i];
-    const matchIndex = blocks.findIndex((v, j) => j !== i && v === val);
-    if (matchIndex !== -1) {
-      blocks.splice(i, 1);
-      blocks[matchIndex] *= 2;
-      updateUI();
-      break;
+    for (let j = i + 1; j < blocks.length; j++) {
+      if (blocks[i] === blocks[j]) {
+        const newVal = blocks[i] * 2;
+        blocks.splice(j, 1);
+        blocks.splice(i, 1);
+        blocks.push(newVal);
+        renderBlocks();
+        return;
+      }
     }
   }
 }
 
-// Spielzeit und Spawn-Timer zählen
-setInterval(() => {
-  gameTime++;
-  spawnCountdown--;
-  if (spawnCountdown <= 0) {
-    addBlock();
-  }
-  updateUI();
-}, 1000);
-
-// Geld und Arbeit regelmäßig
-setInterval(earnMoney, 5000);
-setInterval(workerCombine, workerSpeed);
-
-// Shop anzeigen/verstecken
-document.getElementById("shopButton").onclick = () => {
-  document.getElementById("shop").classList.remove("hidden");
-};
-
-function closeShop() {
-  document.getElementById("shop").classList.add("hidden");
-}
-
-// Upgrades
-document.getElementById("upgradeStartValue").onclick = () => {
-  if (money >= costStartValue) {
-    money -= costStartValue;
-    startValue++;
-    costStartValue *= 2;
-    updateUI();
-  }
-};
-
-document.getElementById("upgradeSpeed").onclick = () => {
-  if (money >= costSpeed && spawnSpeed > 2000) {
-    money -= costSpeed;
-    spawnSpeed -= 1000;
-    costSpeed *= 2;
-    spawnCountdown = Math.floor(spawnSpeed / 1000);
-    updateUI();
-  }
-};
-
-document.getElementById("upgradeWorker").onclick = () => {
-  if (money >= costWorker && workerSpeed > 1000) {
-    money -= costWorker;
-    workerSpeed -= 1000;
-    costWorker *= 2;
-    clearInterval(workerInterval);
-    workerInterval = setInterval(workerCombine, workerSpeed);
-    updateUI();
-  }
-};
-
-// Reset
 function resetGame() {
-  if (confirm("Spiel wirklich zurücksetzen?")) {
+  if (confirm("Bist du sicher, dass du das Spiel zurücksetzen willst?")) {
+    localStorage.clear();
     location.reload();
   }
 }
 
-// Starte UI
-updateUI();
+// Init
+renderBlocks();
+document.getElementById("price_startValue").textContent = prices.startValue;
+document.getElementById("price_spawnSpeed").textContent = prices.spawnSpeed;
+document.getElementById("price_worker").textContent = prices.worker;
+
+spawnInterval = setInterval(updateSpawnTimer, 1000);
+incomeInterval = setInterval(generateIncome, 5000);
+workerInterval = setInterval(runWorker, workerSpeed);
+gameTimeInterval = setInterval(() => {
+  gameTime++;
+  gameTimeDisplay.textContent = gameTime + "s";
+  saveGame();
+}, 1000);
