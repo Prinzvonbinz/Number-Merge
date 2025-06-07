@@ -10,18 +10,21 @@
   <div class="header">
     <h1>Number Merge</h1>
     <p>Geld: <span id="money">0</span></p>
+    <p>Spawn in: <span id="spawnTimer">0</span>s</p>
+    <p>Spielzeit: <span id="gameTime">0:00</span></p>
   </div>
+
   <div id="blocks"></div>
 
   <button id="shopButton">Shop</button>
 
   <div id="shop" class="hidden">
     <h2>Shop</h2>
-    <button id="upgradeStartValue">Startwert erhöhen (Kosten: <span id="costStartValue">10</span>)</button>
-    <button id="upgradeSpeed">Spawn-Geschwindigkeit erhöhen (Kosten: <span id="costSpeed">20</span>)</button>
-    <button id="upgradeWorker">Arbeiter verbessern (Kosten: <span id="costWorker">50</span>)</button>
-    <button onclick="closeShop()">Zurück</button>
-    <button onclick="resetGame()" style="background: #c0392b; color: white;">Spiel zurücksetzen</button>
+    <button class="shop-btn" id="upgradeStartValue">Startwert erhöhen (Kosten: <span id="costStartValue">10</span>)</button>
+    <button class="shop-btn" id="upgradeSpeed">Spawn-Geschwindigkeit erhöhen (Kosten: <span id="costSpeed">20</span>)</button>
+    <button class="shop-btn" id="upgradeWorker">Arbeiter verbessern (Kosten: <span id="costWorker">50</span>)</button>
+    <button class="shop-btn" onclick="closeShop()">Zurück</button>
+    <button class="shop-btn danger" onclick="resetGame()">Spiel zurücksetzen</button>
   </div>
 
   <script src="main.js"></script>
