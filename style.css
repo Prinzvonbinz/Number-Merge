@@ -23,7 +23,9 @@ body {
   font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
-  color: #000;
+  color: #fff;
+  border: 2px solid #fff;
+  background: #444;
 }
 
 button {
@@ -41,10 +43,21 @@ button:hover {
   background: #555;
 }
 
-.hidden {
-  display: none;
+.shop-btn {
+  width: 300px;
+  max-width: 90%;
+  display: block;
+  margin: 10px auto;
 }
 
-#shop {
-  margin-top: 20px;
+.danger {
+  background: #c0392b;
+}
+
+.danger:hover {
+  background: #e74c3c;
+}
+
+.hidden {
+  display: none;
 }
