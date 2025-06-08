@@ -1,52 +1,45 @@
 body {
-  margin: 0;
-  padding: 0;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: #1e1e2f;
+  color: #f0f0f0;
   font-family: Arial, sans-serif;
   text-align: center;
-}
-
-#game-container {
+  margin: 0;
   padding: 20px;
-  max-width: 800px;
-  margin: auto;
 }
 
 h1 {
-  font-size: 36px;
-  margin-bottom: 10px;
+  font-size: 2em;
+  margin-bottom: 20px;
 }
 
-.stats {
+#stats {
   display: flex;
   justify-content: space-around;
   margin-bottom: 20px;
-  font-size: 18px;
+  font-size: 1.2em;
 }
 
-#blocks-container {
-  display: flex;
-  flex-wrap: wrap;
+#blockContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
   gap: 10px;
-  justify-content: center;
-  margin: 20px 0;
+  max-width: 500px;
+  margin: 0 auto 20px;
 }
 
 .block {
   width: 60px;
   height: 60px;
-  background-color: #4caf50;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
+  background-color: #4a4a6a;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: bold;
+  font-size: 1.2em;
   border-radius: 8px;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.1s ease;
+  transition: transform 0.1s;
 }
 
 .block:active {
@@ -54,39 +47,47 @@ h1 {
 }
 
 #shop {
-  margin-top: 20px;
+  background-color: #2b2b3d;
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: 0 auto 20px;
+}
+
+#shop h2 {
+  margin-top: 0;
 }
 
 #shop button {
   display: block;
-  width: 250px;
-  margin: 10px auto;
+  width: 100%;
+  margin: 10px 0;
   padding: 10px;
-  font-size: 16px;
-  background-color: #673ab7;
-  color: white;
+  font-size: 1em;
   border: none;
   border-radius: 6px;
+  background-color: #5c5cff;
+  color: white;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s;
 }
 
 #shop button:hover {
-  background-color: #5e35b1;
+  background-color: #4646d1;
 }
 
-.reset {
-  margin-top: 30px;
+#resetBtn {
+  margin-top: 20px;
   padding: 10px 20px;
-  font-size: 16px;
-  background-color: #e53935;
+  font-size: 1em;
+  background-color: #d9534f;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s;
 }
 
-.reset:hover {
-  background-color: #c62828;
+#resetBtn:hover {
+  background-color: #c9302c;
 }
