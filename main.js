@@ -1,9 +1,9 @@
-// Spiellogik-Variablen
+// Variablen und LocalStorage laden
 let blocks = JSON.parse(localStorage.getItem("blocks")) || [];
 let money = Number(localStorage.getItem("money")) || 0;
 let startValue = Number(localStorage.getItem("startValue")) || 1;
-let spawnSpeed = Number(localStorage.getItem("spawnSpeed")) || 30000;
-let workerSpeed = Number(localStorage.getItem("workerSpeed")) || 10000;
+let spawnSpeed = Number(localStorage.getItem("spawnSpeed")) || 30000; // ms
+let workerSpeed = Number(localStorage.getItem("workerSpeed")) || 10000; // ms
 let prices = JSON.parse(localStorage.getItem("prices")) || {
   startValue: 10,
   spawnSpeed: 25,
@@ -11,20 +11,15 @@ let prices = JSON.parse(localStorage.getItem("prices")) || {
 };
 let gameTime = Number(localStorage.getItem("gameTime")) || 0;
 
-// Timer und Anzeigen
 let spawnCountdown = spawnSpeed;
-let spawnInterval;
-let incomeInterval;
-let gameTimeInterval;
-let workerInterval;
+let spawnInterval, incomeInterval, gameTimeInterval, workerInterval;
 
-// DOM-Elemente
 const moneyDisplay = document.getElementById("money");
 const gameTimeDisplay = document.getElementById("gameTime");
 const spawnTimerDisplay = document.getElementById("spawnTimer");
 const blockContainer = document.getElementById("blockContainer");
 
-// Speichern
+// Spielstand speichern
 function saveGame() {
   localStorage.setItem("blocks", JSON.stringify(blocks));
   localStorage.setItem("money", money);
@@ -35,14 +30,13 @@ function saveGame() {
   localStorage.setItem("gameTime", gameTime);
 }
 
-// Block erstellen
+// Neue Blöcke spawnen
 function spawnBlock() {
-  const value = Math.max(1, startValue);
-  blocks.push(value);
+  blocks.push(startValue > 0 ? startValue : 1);
   renderBlocks();
 }
 
-// Blöcke anzeigen
+// Blöcke rendern
 function renderBlocks() {
   blockContainer.innerHTML = "";
   blocks.forEach((val, idx) => {
@@ -56,9 +50,9 @@ function renderBlocks() {
   moneyDisplay.textContent = Math.floor(money);
 }
 
-// Farbe nach Wert
+// Farbe der Blöcke bestimmen
 function getColor(val) {
-  const hue = (val * 30) % 360;
+  const hue = (val * 40) % 360;
   return `hsl(${hue}, 70%, 50%)`;
 }
 
@@ -70,6 +64,7 @@ function combineBlock(index, value) {
     blocks.splice(sameIndex, 1);
     blocks.push(value * 2);
     renderBlocks();
+    saveGame();
   }
 }
 
@@ -82,7 +77,7 @@ function generateIncome() {
   saveGame();
 }
 
-// Spawn-Timer-Logik
+// Spawn-Timer aktualisieren
 function updateSpawnTimer() {
   spawnCountdown -= 1000;
   if (spawnCountdown <= 0) {
@@ -91,83 +86,78 @@ function updateSpawnTimer() {
   }
   spawnTimerDisplay.textContent = Math.ceil(spawnCountdown / 1000);
 }
-// Spielzeit erhöhen
+
+// Upgrade kaufen
+function buyUpgrade(type) {
+  if (money >= prices[type]) {
+    money -= prices[type];
+    if (type === "startValue") startValue += 1;
+    else if (type === "spawnSpeed") spawnSpeed = Math.max(5000, Math.floor(spawnSpeed * 0.95));
+    else if (type === "worker") workerSpeed = Math.max(1000, Math.floor(workerSpeed * 0.9));
+
+    prices[type] = Math.floor(prices[type] * 1.5);
+    document.getElementById("price_" + type).textContent = prices[type];
+    saveGame();
+  }
+}
+
+// Arbeiter kombiniert Blöcke automatisch
+function runWorker() {
+  for (let i = 0; i < blocks.length; i++) {
+    for (let j = i + 1; j < blocks.length; j++) {
+      if (blocks[i] === blocks[j]) {
+        const newVal = blocks[i] * 2;
+        blocks.splice(j, 1);
+        blocks.splice(i, 1);
+        blocks.push(newVal);
+        renderBlocks();
+        saveGame();
+        return;
+      }
+    }
+  }
+}
+
+// Spiel zurücksetzen
+function resetGame() {
+  if (confirm("Bist du sicher, dass du das Spiel zurücksetzen willst?")) {
+    blocks = [];
+    money = 0;
+    startValue = 1;
+    spawnSpeed = 30000;
+    workerSpeed = 10000;
+    prices = {
+      startValue: 10,
+      spawnSpeed: 25,
+      worker: 50
+    };
+    gameTime = 0;
+    spawnCountdown = spawnSpeed;
+    saveGame();
+    renderBlocks();
+    updateUIPrices();
+  }
+}
+
+// UI-Preise aktualisieren
+function updateUIPrices() {
+  document.getElementById("price_startValue").textContent = prices.startValue;
+  document.getElementById("price_spawnSpeed").textContent = prices.spawnSpeed;
+  document.getElementById("price_worker").textContent = prices.worker;
+}
+
+// Spielzeit hochzählen
 function updateGameTime() {
   gameTime++;
   gameTimeDisplay.textContent = gameTime + "s";
   saveGame();
 }
 
-// Upgrades kaufen
-function upgrade(type) {
-  if (money < prices[type]) return;
-  money -= prices[type];
-
-  switch (type) {
-    case "startValue":
-      startValue += 1;
-      prices.startValue = Math.floor(prices.startValue * 1.5);
-      break;
-    case "spawnSpeed":
-      if (spawnSpeed > 5000) spawnSpeed -= 5000;
-      prices.spawnSpeed = Math.floor(prices.spawnSpeed * 1.8);
-      clearInterval(spawnInterval);
-      spawnInterval = setInterval(updateSpawnTimer, 1000);
-      break;
-    case "worker":
-      if (workerSpeed > 1000) workerSpeed -= 1000;
-      prices.worker = Math.floor(prices.worker * 2);
-      clearInterval(workerInterval);
-      workerInterval = setInterval(generateIncome, workerSpeed);
-      break;
-  }
-  renderShop();
-  renderBlocks();
-  saveGame();
-}
-
-// Shop anzeigen
-function renderShop() {
-  document.getElementById("priceStartValue").textContent = prices.startValue;
-  document.getElementById("priceSpawnSpeed").textContent = prices.spawnSpeed;
-  document.getElementById("priceWorker").textContent = prices.worker;
-}
-
-// Zurücksetzen
-function resetGame() {
-  localStorage.clear();
-  blocks = [];
-  money = 0;
-  startValue = 1;
-  spawnSpeed = 30000;
-  workerSpeed = 10000;
-  prices = { startValue: 10, spawnSpeed: 25, worker: 50 };
-  gameTime = 0;
-  spawnCountdown = spawnSpeed;
-  clearInterval(spawnInterval);
-  clearInterval(incomeInterval);
-  clearInterval(workerInterval);
-  clearInterval(gameTimeInterval);
-  startGame();
-}
-
 // Initialisierung
-function startGame() {
-  renderBlocks();
-  renderShop();
-  gameTimeDisplay.textContent = gameTime + "s";
-  spawnTimerDisplay.textContent = Math.ceil(spawnCountdown / 1000);
-  moneyDisplay.textContent = Math.floor(money);
-  spawnInterval = setInterval(updateSpawnTimer, 1000);
-  workerInterval = setInterval(generateIncome, workerSpeed);
-  gameTimeInterval = setInterval(updateGameTime, 1000);
-}
+renderBlocks();
+updateUIPrices();
 
-// EventListener für Buttons
-document.getElementById("btnStartValue").addEventListener("click", () => upgrade("startValue"));
-document.getElementById("btnSpawnSpeed").addEventListener("click", () => upgrade("spawnSpeed"));
-document.getElementById("btnWorker").addEventListener("click", () => upgrade("worker"));
-document.getElementById("reset").addEventListener("click", resetGame);
-
-// Spiel starten
-startGame();
+spawnInterval = setInterval(updateSpawnTimer, 1000);
+incomeInterval = setInterval(generateIncome, 5000);
+workerInterval = setInterval(runWorker, workerSpeed);
+gameTimeInterval = setInterval(updateGameTime, 1000);
