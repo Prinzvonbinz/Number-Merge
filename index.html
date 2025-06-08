@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Number Merge</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Number Merge</h1>
-  <div id="stats">
-    <div>Geld: <span id="money">0</span></div>
-    <div>Spielzeit: <span id="gameTime">0s</span></div>
-    <div>Nächster Block in: <span id="spawnTimer">30</span>s</div>
-  </div>
-  
-  <div id="blockContainer"></div>
-  
-  <div id="shop">
-    <h2>Shop</h2>
-    <button onclick="buyUpgrade('startValue')">Startwert (+1) – <span id="price_startValue">10</span>$</button>
-    <button onclick="buyUpgrade('spawnSpeed')">Geschwindigkeit (+5%) – <span id="price_spawnSpeed">25</span>$</button>
-    <button onclick="buyUpgrade('worker')">Arbeiter (schneller) – <span id="price_worker">50</span>$</button>
-  </div>
+  <div id="game-container">
+    <h1>Number Merge</h1>
+    <div class="stats">
+      <div>💰 Geld: <span id="money">0</span></div>
+      <div>⏱️ Spielzeit: <span id="spielzeit">0</span>s</div>
+      <div>🧱 Nächster Block in: <span id="spawnCountdown">5</span>s</div>
+    </div>
 
-  <button id="resetBtn" onclick="resetGame()">Reset Spiel</button>
+    <div id="blocks-container"></div>
+
+    <h2>🛠️ Shop</h2>
+    <div id="shop">
+      <button id="startwertBtn">Startwert +1 (Kosten: <span id="startwertCost">100</span>)</button>
+      <button id="spawnSpeedBtn">Schnellerer Spawn (Kosten: <span id="spawnSpeedCost">200</span>)</button>
+      <button id="workerBtn">Arbeiter verbessern (Kosten: <span id="workerCost">300</span>)</button>
+    </div>
+
+    <button id="resetBtn" class="reset">🔁 Reset Spiel</button>
+  </div>
 
   <script src="main.js"></script>
 </body>
